@@ -7,7 +7,7 @@ kaboom({
   font: 'apl386',
 	background: [ 194, 26, 9 ]
 })
-loadAssets()
+loadAssets();
 
 
 // define some constants
