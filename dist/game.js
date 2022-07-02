@@ -3366,7 +3366,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     add([
       pos(center()),
       origin("center"),
-      text("Instructions\n\n\nTry to catch as much potatoes as you can \nwith your basket. There are \nenemies, so be careful! Use your arrow keys \nto move the player. Remember that the \nUP key and DOWN key don't work! \n(JUMP: [SPACE]\nGood luck and have fun! :D", {
+      text("Instructions\n\n\nTry to weave your way around \nthis platformer!. There are \nenemies, so be careful! Use your arrow keys \nto move the player. Remember that the \nUP key and DOWN key don't work! \n(JUMP: [SPACE]\nGood luck and have fun! :D", {
         size: 35
       })
     ]);
