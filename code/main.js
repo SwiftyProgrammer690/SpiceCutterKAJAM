@@ -16,7 +16,55 @@ const MOVE_SPEED = 480
 const FALL_DEATH = 2400
 const BULLET_SPEED = 800
 
+function addButton(txt, p, f) {
+  const btn = add([
+    text(txt, {
+      size: 25,
+      transform(idx, ch) {
+        return {
+          color: hsl2rgb(0, 0, 255),
+        }
+      }
+    }),
+    pos(p),
+    area({ cursor: "pointer", }),
+  ])
+  btn.onClick(f);
+}
 
+function spawnChilli() {
+  const dir = choose([LEFT, RIGHT])
+
+	add([
+		sprite("bean", { flipX: dir.eq(LEFT) }),
+    scale(2),
+		move(dir, rand(40, 100)),
+		cleanup(),
+		pos(dir.eq(LEFT) ? width() : 0, rand(-20, 480)),
+		origin("top"),
+		area(),
+		z(-50),
+	])
+
+	wait(rand(1, 3), spawnChilli)
+}
+
+function spawnEnemy() {
+  const dir = choose([LEFT, RIGHT])
+
+	add([
+		sprite("ghosty", { flipX: dir.eq(LEFT) }),
+    scale(2),
+		move(dir, rand(40, 100)),
+		cleanup(),
+		pos(dir.eq(LEFT) ? width() : 0, rand(-20, 480)),
+		origin("top"),
+		area(),
+		z(-50),
+	])
+
+	wait(rand(1, 3), spawnEnemy)
+}
 
 const LEVELS = [
 	[
@@ -60,13 +108,13 @@ const LEVELS = [
 		"                          $",
 		"                          $",
 		"                          $",
-		"                          $",
+		"                     =    $",
 		"           $$        =| = $",
 		"           ===        =   $",
 		"  %     $$            =   $",
 		"        ===           =   $",
 		"                      =    ",
-		"       ^^     |||     =   @",
+		"       ^^   |  |  |   =   @",
 		"===========================",
 	],
   [
@@ -79,7 +127,7 @@ const LEVELS = [
 		"       $$$ ===       =     ",
 		"       ===           =     ",
 		"                     =     ",
-		"          $$$$       == |@=",
+		"          $$$$      == !|@=",
 		"===========================",
 	],
   [
@@ -348,99 +396,77 @@ scene("game", ({ levelId, coins } = { levelId: 0, coins: 0 }) => {
 })
 
 scene("lose", () => {
+  spawnChilli()
+  spawnEnemy()
   add([
-		text("You Lose! Retry? [SPACE]"),
+  pos(center()),
+  origin("center"),
+  text("You Lost!"),
+    
   ])
-  onKeyPress(() => go("game"))
+  addButton(
+   "Try Again?", 
+   vec2(300, 450), 
+   () => go("game"))
 })
 
+
+loadSound("music", "sounds/music.mp3");
+
 scene("intro", () => {
+  spawnChilli()
+  spawnEnemy()
+  let music = play("music", {
+    volume: 1,
+    loop: true
+  })
   add([
-		text("Welcome to Spice Cutter! [SPACE]")
+    pos(center()),
+    origin("center"),
+    text("Spice Cutter"),
+    
   ])
   add([
-    sprite("bean"),
-		pos(0, 80),
+    pos(center()),
+    origin("center"),
+    text("\n\n\n\n\n\ndon't get cut by the enemy knifes!", {
+      size: 25
+    }),
   ])
-  add([
-    sprite("ghosty"),
-		pos(80, 80),
-  ])
-  add([
-    sprite("ghosty"),
-		pos(160, 80),
-  ])
-  add([
-    sprite("ghosty"),
-		pos(240, 80),
-  ])
-  add([
-    sprite("ghosty"),
-		pos(320, 80),
-  ])
-  add([
-    sprite("cut"),
-		pos(0, 160),
-  ])
-  add([
-    sprite("cut"),
-		pos(80, 160),
-  ])
-  add([
-    sprite("cut"),
-		pos(160, 160),
-  ])
-  add([
-    sprite("cut"),
-		pos(240, 160),
-  ])
+  addButton(
+    "Play", 
+    vec2(300, 450), 
+    () => go("game")),
+  addButton("Instructions", vec2(300, 500), () => go("instructions"))
   
-  
-  onKeyPress(() => go("game"))
 })
 
 scene("win", () => {
-	add([
-		text("You Win! Play Again? [SPACE]"),
-	])
+  spawnChilli()
+  spawnEnemy()
   add([
-    sprite("bean"),
-		pos(0, 80),
+    pos(center()),
+    origin("center"),
+    text("You Won!"),
+    
   ])
-  add([
-    sprite("ghosty"),
-		pos(80, 80),
-  ])
-  add([
-    sprite("ghosty"),
-		pos(160, 80),
-  ])
-  add([
-    sprite("ghosty"),
-		pos(240, 80),
-  ])
-  add([
-    sprite("ghosty"),
-		pos(320, 80),
-  ])
-  add([
-    sprite("cut"),
-		pos(0, 160),
-  ])
-  add([
-    sprite("cut"),
-		pos(80, 160),
-  ])
-  add([
-    sprite("cut"),
-		pos(160, 160),
-  ])
-  add([
-    sprite("cut"),
-		pos(240, 160),
-  ])
-	onKeyPress(() => go("game"))
+  addButton(
+   "Play Again!", 
+   vec2(300, 450), 
+   () => go("game"))
 })
 
+scene("instructions", () => {
+  spawnChilli()
+  spawnEnemy()
+  add([
+    pos(center()),
+    origin("center"),
+    text("Instructions\n\n\nTry to weave your way around \nthis platformer!. There are \nenemies, so be careful! Use your arrow keys \nto move the player. Remember that the \nUP key and DOWN key don't work! \n(JUMP: [SPACE]\nGood luck and have fun! :D", {
+      size: 35
+    })
+  ])
+  addButton("Go Play!", vec2(200, 600), () => go("game"))  
+})
 
 go("intro")

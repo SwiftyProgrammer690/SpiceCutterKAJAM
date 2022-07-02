@@ -121,11 +121,11 @@
   }
   __name($t, "$t");
   a($t, "rad2deg");
-  function z(i, t, l) {
-    return t > l ? z(i, l, t) : Math.min(Math.max(i, t), l);
+  function z2(i, t, l) {
+    return t > l ? z2(i, l, t) : Math.min(Math.max(i, t), l);
   }
-  __name(z, "z");
-  a(z, "clamp");
+  __name(z2, "z");
+  a(z2, "clamp");
   function Ve(i, t, l) {
     return i + (t - i) * l;
   }
@@ -137,7 +137,7 @@
   __name(ht, "ht");
   a(ht, "map");
   function hr(i, t, l, w, U) {
-    return z(ht(i, t, l, w, U), w, U);
+    return z2(ht(i, t, l, w, U), w, U);
   }
   __name(hr, "hr");
   a(hr, "mapc");
@@ -233,7 +233,7 @@
       b(this, "r", 255);
       b(this, "g", 255);
       b(this, "b", 255);
-      this.r = z(t, 0, 255), this.g = z(l, 0, 255), this.b = z(w, 0, 255);
+      this.r = z2(t, 0, 255), this.g = z2(l, 0, 255), this.b = z2(w, 0, 255);
     }
     static fromArray(t) {
       return new de(t[0], t[1], t[2]);
@@ -1072,7 +1072,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     __name(_r, "_r");
     a(_r, "loadBean");
     function Br(e) {
-      return e !== void 0 && (w.masterNode.gain.value = z(e, Or, Ir)), w.masterNode.gain.value;
+      return e !== void 0 && (w.masterNode.gain.value = z2(e, Or, Ir)), w.masterNode.gain.value;
     }
     __name(Br, "Br");
     a(Br, "volume");
@@ -1115,11 +1115,11 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       }, stopped() {
         return B("stopped()", "isStopped()"), this.isStopped();
       }, speed(y) {
-        return y !== void 0 && (c.playbackRate.value = z(y, ds, fs)), c.playbackRate.value;
+        return y !== void 0 && (c.playbackRate.value = z2(y, ds, fs)), c.playbackRate.value;
       }, detune(y) {
-        return c.detune ? (y !== void 0 && (c.detune.value = z(y, ps, ms)), c.detune.value) : 0;
+        return c.detune ? (y !== void 0 && (c.detune.value = z2(y, ps, ms)), c.detune.value) : 0;
       }, volume(y) {
-        return y !== void 0 && (s.gain.value = z(y, Or, Ir)), s.gain.value;
+        return y !== void 0 && (s.gain.value = z2(y, Or, Ir)), s.gain.value;
       }, loop() {
         c.loop = true;
       }, unloop() {
@@ -2022,9 +2022,9 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       }), H("f8", () => {
         C.paused = !C.paused;
       }), H("f7", () => {
-        C.timeScale = ge(z(C.timeScale - 0.2, 0, 2), 1);
+        C.timeScale = ge(z2(C.timeScale - 0.2, 0, 2), 1);
       }), H("f9", () => {
-        C.timeScale = ge(z(C.timeScale + 0.2, 0, 2), 1);
+        C.timeScale = ge(z2(C.timeScale + 0.2, 0, 2), 1);
       }), H("f10", () => {
         C.stepFrame();
       }), H("f5", () => {
@@ -2994,6 +2994,52 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
   var JUMP_FORCE = 1320;
   var MOVE_SPEED = 480;
   var FALL_DEATH = 2400;
+  function addButton(txt, p, f2) {
+    const btn = add([
+      text(txt, {
+        size: 25,
+        transform(idx, ch) {
+          return {
+            color: hsl2rgb(0, 0, 255)
+          };
+        }
+      }),
+      pos(p),
+      area({ cursor: "pointer" })
+    ]);
+    btn.onClick(f2);
+  }
+  __name(addButton, "addButton");
+  function spawnChilli() {
+    const dir = choose([LEFT, RIGHT]);
+    add([
+      sprite("bean", { flipX: dir.eq(LEFT) }),
+      scale(2),
+      move(dir, rand(40, 100)),
+      cleanup(),
+      pos(dir.eq(LEFT) ? width() : 0, rand(-20, 480)),
+      origin("top"),
+      area(),
+      z(-50)
+    ]);
+    wait(rand(1, 3), spawnChilli);
+  }
+  __name(spawnChilli, "spawnChilli");
+  function spawnEnemy() {
+    const dir = choose([LEFT, RIGHT]);
+    add([
+      sprite("ghosty", { flipX: dir.eq(LEFT) }),
+      scale(2),
+      move(dir, rand(40, 100)),
+      cleanup(),
+      pos(dir.eq(LEFT) ? width() : 0, rand(-20, 480)),
+      origin("top"),
+      area(),
+      z(-50)
+    ]);
+    wait(rand(1, 3), spawnEnemy);
+  }
+  __name(spawnEnemy, "spawnEnemy");
   var LEVELS = [
     [
       "                          $",
@@ -3036,13 +3082,13 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       "                          $",
       "                          $",
       "                          $",
-      "                          $",
+      "                     =    $",
       "           $$        =| = $",
       "           ===        =   $",
       "  %     $$            =   $",
       "        ===           =   $",
       "                      =    ",
-      "       ^^     |||     =   @",
+      "       ^^   |  |  |   =   @",
       "==========================="
     ],
     [
@@ -3055,7 +3101,7 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
       "       $$$ ===       =     ",
       "       ===           =     ",
       "                     =     ",
-      "          $$$$       == |@=",
+      "          $$$$      == !|@=",
       "==========================="
     ],
     [
@@ -3273,94 +3319,58 @@ vec4 frag(vec3 pos, vec2 uv, vec4 color, sampler2D tex) {
     });
   });
   scene("lose", () => {
+    spawnChilli();
+    spawnEnemy();
     add([
-      text("You Lose! Retry? [SPACE]")
+      pos(center()),
+      origin("center"),
+      text("You Lost!")
     ]);
-    onKeyPress(() => go("game"));
+    addButton("Try Again?", vec2(300, 450), () => go("game"));
   });
+  loadSound("music", "sounds/music.mp3");
   scene("intro", () => {
+    spawnChilli();
+    spawnEnemy();
+    let music = play("music", {
+      volume: 1,
+      loop: true
+    });
     add([
-      text("Welcome to Spice Cutter! [SPACE]")
+      pos(center()),
+      origin("center"),
+      text("Spice Cutter")
     ]);
     add([
-      sprite("bean"),
-      pos(0, 80)
+      pos(center()),
+      origin("center"),
+      text("\n\n\n\n\n\ndon't get cut by the enemy knifes!", {
+        size: 25
+      })
     ]);
-    add([
-      sprite("ghosty"),
-      pos(80, 80)
-    ]);
-    add([
-      sprite("ghosty"),
-      pos(160, 80)
-    ]);
-    add([
-      sprite("ghosty"),
-      pos(240, 80)
-    ]);
-    add([
-      sprite("ghosty"),
-      pos(320, 80)
-    ]);
-    add([
-      sprite("cut"),
-      pos(0, 160)
-    ]);
-    add([
-      sprite("cut"),
-      pos(80, 160)
-    ]);
-    add([
-      sprite("cut"),
-      pos(160, 160)
-    ]);
-    add([
-      sprite("cut"),
-      pos(240, 160)
-    ]);
-    onKeyPress(() => go("game"));
+    addButton("Play", vec2(300, 450), () => go("game")), addButton("Instructions", vec2(300, 500), () => go("instructions"));
   });
   scene("win", () => {
+    spawnChilli();
+    spawnEnemy();
     add([
-      text("You Win! Play Again? [SPACE]")
+      pos(center()),
+      origin("center"),
+      text("You Won!")
     ]);
+    addButton("Play Again!", vec2(300, 450), () => go("game"));
+  });
+  scene("instructions", () => {
+    spawnChilli();
+    spawnEnemy();
     add([
-      sprite("bean"),
-      pos(0, 80)
+      pos(center()),
+      origin("center"),
+      text("Instructions\n\n\nTry to catch as much potatoes as you can \nwith your basket. There are \nenemies, so be careful! Use your arrow keys \nto move the player. Remember that the \nUP key and DOWN key don't work! \n(JUMP: [SPACE]\nGood luck and have fun! :D", {
+        size: 35
+      })
     ]);
-    add([
-      sprite("ghosty"),
-      pos(80, 80)
-    ]);
-    add([
-      sprite("ghosty"),
-      pos(160, 80)
-    ]);
-    add([
-      sprite("ghosty"),
-      pos(240, 80)
-    ]);
-    add([
-      sprite("ghosty"),
-      pos(320, 80)
-    ]);
-    add([
-      sprite("cut"),
-      pos(0, 160)
-    ]);
-    add([
-      sprite("cut"),
-      pos(80, 160)
-    ]);
-    add([
-      sprite("cut"),
-      pos(160, 160)
-    ]);
-    add([
-      sprite("cut"),
-      pos(240, 160)
-    ]);
-    onKeyPress(() => go("game"));
+    addButton("Go Play!", vec2(200, 600), () => go("game"));
   });
   go("intro");
 })();
